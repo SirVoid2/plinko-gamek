@@ -302,31 +302,6 @@ class PlinkoEngine {
         profit,
         balance: nextBalance,
       });
-      if (profit > 0) {
-        emitEmbedEventWithContext('plinko:win', {
-          betAmount,
-          rowCount: this.rowCount,
-          riskLevel: this.riskLevel,
-          payout: {
-            multiplier,
-            value: payoutValue,
-          },
-          profit,
-          balance: nextBalance,
-        });
-      } else if (profit < 0) {
-        emitEmbedEventWithContext('plinko:loss', {
-          betAmount,
-          rowCount: this.rowCount,
-          riskLevel: this.riskLevel,
-          payout: {
-            multiplier,
-            value: payoutValue,
-          },
-          profit,
-          balance: nextBalance,
-        });
-      }
     }
 
     Matter.Composite.remove(this.engine.world, ball);

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Balance from '$lib/components/Balance.svelte';
   import LiveStatsWindow from '$lib/components/LiveStatsWindow/LiveStatsWindow.svelte';
   import Plinko from '$lib/components/Plinko';
   import SettingsWindow from '$lib/components/SettingsWindow';
@@ -88,6 +89,11 @@
 <svelte:window onbeforeunload={handleBeforeUnload} />
 
 <div class="relative flex min-h-dvh w-full flex-col bg-gray-800">
+  <div class="flex items-center justify-between border-b border-slate-700 px-4 py-3">
+    <p class="text-sm font-semibold text-slate-200">Plinko</p>
+    <Balance allowTopUp={false} />
+  </div>
+
   <div class="flex-1 px-5">
     <div class="mx-auto mt-5 max-w-xl min-w-[300px] drop-shadow-xl md:mt-8 lg:max-w-7xl">
       <div class="flex flex-col-reverse overflow-hidden rounded-lg lg:w-full lg:flex-row">

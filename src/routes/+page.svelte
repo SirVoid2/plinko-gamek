@@ -8,6 +8,7 @@
   import { RiskLevel } from '$lib/types';
   import { emitEmbedEventWithContext, isEmbedMode, setupEmbedBridge } from '$lib/utils/embed';
   import { setBalanceFromLocalStorage, writeBalanceToLocalStorage } from '$lib/utils/game';
+  import GitHubLogo from 'phosphor-svelte/lib/GithubLogo';
   import { onMount } from 'svelte';
 
   let isEmbedded = false;
@@ -101,6 +102,34 @@
 
   <SettingsWindow />
   <LiveStatsWindow />
+
+  <footer class="px-5 pt-16 pb-4">
+    <div class="mx-auto max-w-[40rem]">
+      <div aria-hidden="true" class="h-[1px] bg-slate-700"></div>
+      <div class="flex items-center justify-between p-2">
+        <p class="text-sm text-slate-500">
+          <a
+            href="https://www.bbcasino.lovable.app"
+            target="_blank"
+            rel="noreferrer"
+            class=" text-cyan-600 transition hover:text-cyan-500"
+          >
+            Emilio Mejias
+          </a>
+          © {new Date().getFullYear()}
+        </p>
+        <a
+          href="https://github.com/SirVoid2/plinko-gamek"
+          target="_blank"
+          rel="noreferrer"
+          class="flex items-center gap-1 p-1 text-sm text-slate-500 transition hover:text-cyan-500"
+        >
+          <GitHubLogo class="size-4" weight="bold" />
+          <span>Source Code</span>
+        </a>
+      </div>
+    </div>
+  </footer>
 </div>
 
 <style lang="postcss">
