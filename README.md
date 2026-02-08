@@ -25,6 +25,95 @@ Please fork this project on your own if you want to build on top of it.
 - 📊 Real-time live stats
 - 📱 Responsive design
 
+## Embedding & Casino Integration
+
+The game now supports an embeddable `/embed` route and a `postMessage` bridge so a casino site can
+wire the game to its own wallet database. This keeps all balance and bet events under the host
+platform’s control while still rendering the Plinko experience inside an iframe.
+
+For a ready-to-use integration checklist tailored to bbcasino, see
+[`docs/bbcasino-embed.md`](docs/bbcasino-embed.md).
+
+### 1) Embed the game
+
+```html
+<iframe
+  src="https://your-hosted-plinko-site.example.com/embed"
+  title="Plinko"
+  width="100%"
+  height="720"
+  style="border: 0"
+  allow="autoplay; fullscreen"
+></iframe>
+```
+
+### 2) Initialize from the casino wallet
+
+Send an init message with the user’s balance and optional configuration. The game will use this
+instead of local storage.
+
+```js
+const iframe = document.querySelector('iframe');
+
+iframe.contentWindow.postMessage(
+  {
+    type: 'plinko:init',
+    payload: {
+      balance: 1250,
+      betAmount: 5,
+      rowCount: 16,
+      riskLevel: 'MEDIUM',
+      sessionId: 'session_123',
+      userId: 'user_456',
+      targetOrigin: 'https://your-hosted-plinko-site.example.com',
+    },
+  },
+  'https://your-hosted-plinko-site.example.com',
+);
+```
+
+### 3) Listen for events to persist bets/wins
+
+Use the emitted events to create ledger entries in your database.
+
+```js
+window.addEventListener('message', (event) => {
+  if (!event.data || typeof event.data.type !== 'string') return;
+
+  switch (event.data.type) {
+    case 'plinko:ready':
+      console.log('Plinko is ready');
+      break;
+    case 'plinko:bet':
+      // Persist a bet in your database
+      console.log('Bet placed', event.data.payload);
+      break;
+    case 'plinko:result':
+      // Persist win/loss in your database
+      console.log('Bet resolved', event.data.payload);
+      break;
+    case 'plinko:balance':
+      // Optional: sync UI wallet with the game
+      console.log('Balance update', event.data.payload.balance);
+      break;
+  }
+});
+```
+
+**Emitted events**
+
+- `plinko:ready` → `{ timestamp, pathname }`
+- `plinko:bet` → `{ betAmount, rowCount, riskLevel, balance, sessionId?, userId? }`
+- `plinko:result` → `{ betAmount, rowCount, riskLevel, binIndex, payout: { multiplier, value }, profit, balance, sessionId?, userId? }`
+- `plinko:balance` → `{ balance, sessionId?, userId? }`
+
+**Accepted commands**
+
+- `plinko:init` → `{ balance, betAmount?, rowCount?, riskLevel?, sessionId?, userId?, targetOrigin? }`
+- `plinko:set-balance` → `{ balance }`
+- `plinko:config` → `{ betAmount?, rowCount?, riskLevel? }`
+- `plinko:reset` → resets balance to zero (host should follow by sending a new balance)
+
 ## Limitations
 
 The biggest limitation is that this project calculates the outcome on the client-side, so we cannot pre-determine the outcome before ball drop, nor force the ball to drop to a specific pin.
