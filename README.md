@@ -38,7 +38,7 @@ For a ready-to-use integration checklist tailored to bbcasino, see
 
 ```html
 <iframe
-  src="https://your-hosted-plinko-site.example.com/embed"
+  src="https://plinko-gamek-3f77.vercel.app/"
   title="Plinko"
   width="100%"
   height="720"
@@ -65,10 +65,10 @@ iframe.contentWindow.postMessage(
       riskLevel: 'MEDIUM',
       sessionId: 'session_123',
       userId: 'user_456',
-      targetOrigin: 'https://your-hosted-plinko-site.example.com',
+      targetOrigin: 'https://plinko-gamek-3f77.vercel.app/',
     },
   },
-  'https://your-hosted-plinko-site.example.com',
+  'https://plinko-gamek-3f77.vercel.app/',
 );
 ```
 
