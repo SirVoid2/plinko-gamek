@@ -120,17 +120,17 @@
       <div class="flex items-center justify-between p-2">
         <p class="text-sm text-slate-500">
           <a
-            href="https://www.ansonh.com"
+            href="https://www.bbcasino.lovable.app"
             target="_blank"
             rel="noreferrer"
             class=" text-cyan-600 transition hover:text-cyan-500"
           >
-            Anson Heung
+            Emilio Mejias
           </a>
           © {new Date().getFullYear()}
         </p>
         <a
-          href="https://github.com/AnsonH/plinko-game"
+          href="https://github.com/SirVoid2/plinko-game"
           target="_blank"
           rel="noreferrer"
           class="flex items-center gap-1 p-1 text-sm text-slate-500 transition hover:text-cyan-500"
