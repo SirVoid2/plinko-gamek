@@ -130,7 +130,7 @@
           © {new Date().getFullYear()}
         </p>
         <a
-          href="https://github.com/SirVoid2/plinko-game"
+          href="https://github.com/SirVoid2/plinko-gamek"
           target="_blank"
           rel="noreferrer"
           class="flex items-center gap-1 p-1 text-sm text-slate-500 transition hover:text-cyan-500"
