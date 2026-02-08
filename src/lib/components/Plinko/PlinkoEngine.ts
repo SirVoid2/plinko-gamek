@@ -9,6 +9,7 @@ import {
   totalProfitHistory,
 } from '$lib/stores/game';
 import type { RiskLevel, RowCount } from '$lib/types';
+import { emitEmbedEventWithContext } from '$lib/utils/embed';
 import { getRandomBetween } from '$lib/utils/numbers';
 import Matter, { type IBodyDefinition } from 'matter-js';
 import { get } from 'svelte/store';
@@ -210,7 +211,15 @@ class PlinkoEngine {
     Matter.Composite.add(this.engine.world, ball);
 
     betAmountOfExistingBalls.update((value) => ({ ...value, [ball.id]: this.betAmount }));
-    balance.update((balance) => balance - this.betAmount);
+    const currentBalance = get(balance);
+    const nextBalance = currentBalance - this.betAmount;
+    balance.set(nextBalance);
+    emitEmbedEventWithContext('plinko:bet', {
+      betAmount: this.betAmount,
+      rowCount: this.rowCount,
+      riskLevel: this.riskLevel,
+      balance: nextBalance,
+    });
   }
 
   /**
@@ -278,7 +287,46 @@ class PlinkoEngine {
         const lastTotalProfit = history.slice(-1)[0];
         return [...history, lastTotalProfit + profit];
       });
-      balance.update((balance) => balance + payoutValue);
+      const currentBalance = get(balance);
+      const nextBalance = currentBalance + payoutValue;
+      balance.set(nextBalance);
+      emitEmbedEventWithContext('plinko:result', {
+        betAmount,
+        rowCount: this.rowCount,
+        riskLevel: this.riskLevel,
+        binIndex,
+        payout: {
+          multiplier,
+          value: payoutValue,
+        },
+        profit,
+        balance: nextBalance,
+      });
+      if (profit > 0) {
+        emitEmbedEventWithContext('plinko:win', {
+          betAmount,
+          rowCount: this.rowCount,
+          riskLevel: this.riskLevel,
+          payout: {
+            multiplier,
+            value: payoutValue,
+          },
+          profit,
+          balance: nextBalance,
+        });
+      } else if (profit < 0) {
+        emitEmbedEventWithContext('plinko:loss', {
+          betAmount,
+          rowCount: this.rowCount,
+          riskLevel: this.riskLevel,
+          payout: {
+            multiplier,
+            value: payoutValue,
+          },
+          profit,
+          balance: nextBalance,
+        });
+      }
     }
 
     Matter.Composite.remove(this.engine.world, ball);
