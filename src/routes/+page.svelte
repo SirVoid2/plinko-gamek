@@ -8,11 +8,10 @@
   import { RiskLevel } from '$lib/types';
   import { emitEmbedEventWithContext, isEmbedMode, setupEmbedBridge } from '$lib/utils/embed';
   import { setBalanceFromLocalStorage, writeBalanceToLocalStorage } from '$lib/utils/game';
+  import GitHubLogo from 'phosphor-svelte/lib/GithubLogo';
   import { onMount } from 'svelte';
-  import { get } from 'svelte/store';
 
   let isEmbedded = false;
-  let isSyncingFromHost = false;
 
   const handleBeforeUnload = () => {
     if (!isEmbedded) {
@@ -24,71 +23,53 @@
     isEmbedded = isEmbedMode();
     if (!isEmbedded) {
       setBalanceFromLocalStorage();
-    } else {
-      balance.set(0);
     }
-
-    const applyHostUpdate = (update: () => void) => {
-      isSyncingFromHost = true;
-      update();
-      queueMicrotask(() => {
-        isSyncingFromHost = false;
-      });
-    };
 
     const teardown = setupEmbedBridge({
       onInit: (payload) => {
-        applyHostUpdate(() => {
-          if (typeof payload.balance === 'number') {
-            balance.set(payload.balance);
-          }
-          if (typeof payload.betAmount === 'number') {
-            betAmount.set(payload.betAmount);
-          }
-          if (
-            typeof payload.rowCount === 'number' &&
-            rowCountOptions.includes(payload.rowCount as (typeof rowCountOptions)[number])
-          ) {
-            rowCount.set(payload.rowCount as (typeof rowCountOptions)[number]);
-          }
-          if (
-            typeof payload.riskLevel === 'string' &&
-            Object.values(RiskLevel).includes(payload.riskLevel as RiskLevel)
-          ) {
-            riskLevel.set(payload.riskLevel as RiskLevel);
-          }
-        });
+        if (typeof payload.balance === 'number') {
+          balance.set(payload.balance);
+        }
+        if (typeof payload.betAmount === 'number') {
+          betAmount.set(payload.betAmount);
+        }
+        if (
+          typeof payload.rowCount === 'number' &&
+          rowCountOptions.includes(payload.rowCount as (typeof rowCountOptions)[number])
+        ) {
+          rowCount.set(payload.rowCount as (typeof rowCountOptions)[number]);
+        }
+        if (
+          typeof payload.riskLevel === 'string' &&
+          Object.values(RiskLevel).includes(payload.riskLevel as RiskLevel)
+        ) {
+          riskLevel.set(payload.riskLevel as RiskLevel);
+        }
       },
       onBalance: (payload) => {
-        applyHostUpdate(() => {
-          if (typeof payload.balance === 'number') {
-            balance.set(payload.balance);
-          }
-        });
+        if (typeof payload.balance === 'number') {
+          balance.set(payload.balance);
+        }
       },
       onConfig: (payload) => {
-        applyHostUpdate(() => {
-          if (typeof payload.betAmount === 'number') {
-            betAmount.set(payload.betAmount);
-          }
-          if (
-            typeof payload.rowCount === 'number' &&
-            rowCountOptions.includes(payload.rowCount as (typeof rowCountOptions)[number])
-          ) {
-            rowCount.set(payload.rowCount as (typeof rowCountOptions)[number]);
-          }
-          if (
-            typeof payload.riskLevel === 'string' &&
-            Object.values(RiskLevel).includes(payload.riskLevel as RiskLevel)
-          ) {
-            riskLevel.set(payload.riskLevel as RiskLevel);
-          }
-        });
+        if (typeof payload.betAmount === 'number') {
+          betAmount.set(payload.betAmount);
+        }
+        if (
+          typeof payload.rowCount === 'number' &&
+          rowCountOptions.includes(payload.rowCount as (typeof rowCountOptions)[number])
+        ) {
+          rowCount.set(payload.rowCount as (typeof rowCountOptions)[number]);
+        }
+        if (
+          typeof payload.riskLevel === 'string' &&
+          Object.values(RiskLevel).includes(payload.riskLevel as RiskLevel)
+        ) {
+          riskLevel.set(payload.riskLevel as RiskLevel);
+        }
       },
       onReset: () => {
-        applyHostUpdate(() => {
-          balance.set(0);
-        });
+        balance.set(0);
       },
     });
 
@@ -97,40 +78,10 @@
         emitEmbedEventWithContext('plinko:balance', { balance: value });
       }
     });
-    let currentBetAmount = get(betAmount);
-    let currentRowCount = get(rowCount);
-    let currentRiskLevel = get(riskLevel);
-    let configReady = false;
-    const maybeEmitConfig = () => {
-      if (!isEmbedded || isSyncingFromHost || !configReady) {
-        return;
-      }
-      emitEmbedEventWithContext('plinko:config', {
-        betAmount: currentBetAmount,
-        rowCount: currentRowCount,
-        riskLevel: currentRiskLevel,
-      });
-    };
-    const unsubscribeBetAmount = betAmount.subscribe((value) => {
-      currentBetAmount = value;
-      maybeEmitConfig();
-    });
-    const unsubscribeRowCount = rowCount.subscribe((value) => {
-      currentRowCount = value;
-      maybeEmitConfig();
-    });
-    const unsubscribeRiskLevel = riskLevel.subscribe((value) => {
-      currentRiskLevel = value;
-      maybeEmitConfig();
-    });
-    configReady = true;
 
     return () => {
       teardown();
       unsubscribeBalance();
-      unsubscribeBetAmount();
-      unsubscribeRowCount();
-      unsubscribeRiskLevel();
     };
   });
 </script>
@@ -151,6 +102,34 @@
 
   <SettingsWindow />
   <LiveStatsWindow />
+
+  <footer class="px-5 pt-16 pb-4">
+    <div class="mx-auto max-w-[40rem]">
+      <div aria-hidden="true" class="h-[1px] bg-slate-700"></div>
+      <div class="flex items-center justify-between p-2">
+        <p class="text-sm text-slate-500">
+          <a
+            href="https://www.bbcasino.lovable.app"
+            target="_blank"
+            rel="noreferrer"
+            class=" text-cyan-600 transition hover:text-cyan-500"
+          >
+            Emilio Mejias
+          </a>
+          © {new Date().getFullYear()}
+        </p>
+        <a
+          href="https://github.com/SirVoid2/plinko-gamek"
+          target="_blank"
+          rel="noreferrer"
+          class="flex items-center gap-1 p-1 text-sm text-slate-500 transition hover:text-cyan-500"
+        >
+          <GitHubLogo class="size-4" weight="bold" />
+          <span>Source Code</span>
+        </a>
+      </div>
+    </div>
+  </footer>
 </div>
 
 <style lang="postcss">
