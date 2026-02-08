@@ -137,9 +137,9 @@
 
 <svelte:window onbeforeunload={handleBeforeUnload} />
 
-<div class="relative flex min-h-dvh w-full flex-col">
+<div class="relative flex min-h-dvh w-full flex-col bg-gray-800">
   <div class="flex-1 px-5">
-    <div class="mx-auto mt-5 max-w-xl min-w-[300px] drop-shadow-xl md:mt-10 lg:max-w-7xl">
+    <div class="mx-auto mt-5 max-w-xl min-w-[300px] drop-shadow-xl md:mt-8 lg:max-w-7xl">
       <div class="flex flex-col-reverse overflow-hidden rounded-lg lg:w-full lg:flex-row">
         <Sidebar />
         <div class="flex-1">
@@ -152,11 +152,3 @@
   <SettingsWindow />
   <LiveStatsWindow />
 </div>
-
-<style lang="postcss">
-  @reference "../app.css";
-
-  :global(body) {
-    @apply bg-gray-800;
-  }
-</style>
