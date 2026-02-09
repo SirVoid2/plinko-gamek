@@ -1,7 +1,6 @@
 <script lang="ts">
   import LiveStatsWindow from '$lib/components/LiveStatsWindow/LiveStatsWindow.svelte';
   import Plinko from '$lib/components/Plinko';
-  import SettingsWindow from '$lib/components/SettingsWindow';
   import Sidebar from '$lib/components/Sidebar';
   import { rowCountOptions } from '$lib/constants/game';
   import { balance, betAmount, riskLevel, rowCount } from '$lib/stores/game';

@@ -9,12 +9,8 @@
     riskLevel,
     rowCount,
   } from '$lib/stores/game';
-  import { isGameSettingsOpen, isLiveStatsOpen } from '$lib/stores/layout';
   import { BetMode, RiskLevel } from '$lib/types';
-  import { flyAndScale } from '$lib/utils/transitions';
-  import { Popover, Tooltip } from 'bits-ui';
-  import ChartLine from 'phosphor-svelte/lib/ChartLine';
-  import GearSix from 'phosphor-svelte/lib/GearSix';
+  import { Popover } from 'bits-ui';
   import Infinity from 'phosphor-svelte/lib/Infinity';
   import Question from 'phosphor-svelte/lib/Question';
   import type { FormEventHandler } from 'svelte/elements';
@@ -262,67 +258,4 @@
     {/if}
   </button>
 
-  <div class="mt-auto pt-5">
-    <div class="flex items-center gap-4 border-t border-slate-600 pt-3">
-      <Tooltip.Provider delayDuration={0} disableCloseOnTriggerClick>
-        <!-- Settings Button -->
-        <Tooltip.Root>
-          <Tooltip.Trigger
-            onclick={() => ($isGameSettingsOpen = !$isGameSettingsOpen)}
-            class={twMerge(
-              'rounded-full p-2 text-slate-300 transition hover:bg-slate-600 active:bg-slate-500',
-              $isGameSettingsOpen && 'text-slate-100',
-            )}
-          >
-            <GearSix class="size-6" weight="fill" />
-          </Tooltip.Trigger>
-          <Tooltip.Content
-            forceMount
-            sideOffset={4}
-            class="z-30 max-w-lg rounded-md bg-white p-3 text-sm font-medium text-gray-950 drop-shadow-xl"
-          >
-            {#snippet child({ wrapperProps, props, open })}
-              {#if open}
-                <div {...wrapperProps}>
-                  <div {...props} transition:flyAndScale>
-                    <Tooltip.Arrow class="text-white" />
-                    <p>{$isGameSettingsOpen ? 'Close' : 'Open'} Game Settings</p>
-                  </div>
-                </div>
-              {/if}
-            {/snippet}
-          </Tooltip.Content>
-        </Tooltip.Root>
-
-        <!-- Live Stats Button -->
-        <Tooltip.Root>
-          <Tooltip.Trigger
-            onclick={() => ($isLiveStatsOpen = !$isLiveStatsOpen)}
-            class={twMerge(
-              'rounded-full p-2 text-slate-300 transition hover:bg-slate-600 active:bg-slate-500',
-              $isLiveStatsOpen && 'text-slate-100',
-            )}
-          >
-            <ChartLine class="size-6" weight="bold" />
-          </Tooltip.Trigger>
-          <Tooltip.Content
-            forceMount
-            sideOffset={4}
-            class="z-30 max-w-lg rounded-md bg-white p-3 text-sm font-medium text-gray-950 drop-shadow-xl"
-          >
-            {#snippet child({ wrapperProps, props, open })}
-              {#if open}
-                <div {...wrapperProps}>
-                  <div {...props} transition:flyAndScale>
-                    <Tooltip.Arrow class="text-white" />
-                    <p>{$isLiveStatsOpen ? 'Close' : 'Open'} Live Stats</p>
-                  </div>
-                </div>
-              {/if}
-            {/snippet}
-          </Tooltip.Content>
-        </Tooltip.Root>
-      </Tooltip.Provider>
-    </div>
-  </div>
 </div>
