@@ -27,16 +27,18 @@ Please fork this project on your own if you want to build on top of it.
 
 ## Embedding & Casino Integration
 
-Use the `/embed` route and the `postMessage` API below to embed this game into a casino website.
-The host site owns the balance, bet ledger, and database. The game starts with a zero balance in
-embed mode until your site sends `plinko:init`. The game only emits bet, result, balance, and
-config signals, so you can persist them on your end.
+The game now supports an embeddable `/embed` route and a `postMessage` bridge so a casino site can
+wire the game to its own wallet database. This keeps all balance and bet events under the host
+platform’s control while still rendering the Plinko experience inside an iframe.
+
+For a ready-to-use integration checklist tailored to bbcasino, see
+[`docs/bbcasino-embed.md`](docs/bbcasino-embed.md).
 
 ### 1) Embed the game
 
 ```html
 <iframe
-  src="https://your-hosted-plinko-site.example.com/embed"
+  src="https://plinko-gamek-3f77.vercel.app/"
   title="Plinko"
   width="100%"
   height="720"
@@ -63,14 +65,14 @@ iframe.contentWindow.postMessage(
       riskLevel: 'MEDIUM',
       sessionId: 'session_123',
       userId: 'user_456',
-      targetOrigin: 'https://your-hosted-plinko-site.example.com',
+      targetOrigin: 'https://plinko-gamek-3f77.vercel.app/',
     },
   },
-  'https://your-hosted-plinko-site.example.com',
+  'https://plinko-gamek-3f77.vercel.app/',
 );
 ```
 
-### 3) Listen for events to persist bets and results
+### 3) Listen for events to persist bets/wins
 
 Use the emitted events to create ledger entries in your database.
 
@@ -87,12 +89,8 @@ window.addEventListener('message', (event) => {
       console.log('Bet placed', event.data.payload);
       break;
     case 'plinko:result':
-      // Persist result in your database
+      // Persist win/loss in your database
       console.log('Bet resolved', event.data.payload);
-      break;
-    case 'plinko:config':
-      // Persist settings changes in your database
-      console.log('Config updated', event.data.payload);
       break;
     case 'plinko:balance':
       // Optional: sync UI wallet with the game
@@ -108,7 +106,6 @@ window.addEventListener('message', (event) => {
 - `plinko:bet` → `{ betAmount, rowCount, riskLevel, balance, sessionId?, userId? }`
 - `plinko:result` → `{ betAmount, rowCount, riskLevel, binIndex, payout: { multiplier, value }, profit, balance, sessionId?, userId? }`
 - `plinko:balance` → `{ balance, sessionId?, userId? }`
-- `plinko:config` → `{ betAmount, rowCount, riskLevel, sessionId?, userId? }`
 
 **Accepted commands**
 
@@ -116,20 +113,6 @@ window.addEventListener('message', (event) => {
 - `plinko:set-balance` → `{ balance }`
 - `plinko:config` → `{ betAmount?, rowCount?, riskLevel? }`
 - `plinko:reset` → resets balance to zero (host should follow by sending a new balance)
-
-### 4) Build the casino UI (balance, settings, bet history)
-
-The embedded Plinko iframe has no balance bar, settings modal, or bet history. Build those in
-your casino site and keep them in sync using the events/commands above:
-
-- **Balance**: store balance in your database, send it in `plinko:init`, and update it whenever
-  you receive `plinko:bet` (debit) or `plinko:result` (credit).
-- **Settings**: render your own controls for bet amount, row count, and risk level. When the
-  player changes those settings on your site, send `plinko:config` to the iframe. When the player
-  changes them inside the iframe, listen for `plinko:config` to persist the change.
-- **Bet history**: append an entry whenever you receive `plinko:bet` and resolve it when you
-  receive `plinko:result`. The result payload includes the payout and profit so you can label wins
-  and losses on your side.
 
 ## Limitations
 
